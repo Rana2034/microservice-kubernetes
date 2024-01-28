@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dev-kube
+  name: common
+data:
+  application.yml: |-
+    message:
+      hello: Hi Default Profile for Common
+      common: Hi Default Profile for Common
+    spring:
+      data:
+        mongodb:
+          uri: mongodb+srv://mongouser:mongopassword@microservices-cluster.cmrlg.mongodb.net/?maxPoolSize=1000&retryWrites=true&w=majority
+
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      endpoint:
+        health:
+          show-details: always
+      health:
+        circuitbreakers:
+          enabled: true
+    feign:
+      circuitbreaker:
+        enabled: true
+    resilience4j.timelimiter:
+      configs:
+        default:
+          timeoutDuration: 10s
+
+    resilience4j.circuitbreaker:
+      configs:
+        default:
+          registerHealthIndicator: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dev-kube
+  name: common-docker
+data:
+  application.yml: |-
+    message:
+      hello: Hi Default Profile for Common
+      common: Hi Default Profile for Common
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: info, health, loggers, refresh, env, loggers

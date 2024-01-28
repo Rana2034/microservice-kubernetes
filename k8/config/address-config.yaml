@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dev-kube
+  name: address
+data:
+  application.yml: |-
+    spring:
+      data:
+        mongodb:
+          database: address
+    server:
+      port: 8081
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dev-kube
+  name: address-docker
+data:
+  application.yml: |-
+    spring:
+      data:
+        mongodb:
+          uri: mongodb://mongo:27017

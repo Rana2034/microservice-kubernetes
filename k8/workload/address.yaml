@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dev-kube
+  name: address
+  labels:
+    app: address
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      nodePort: 31001
+  selector:
+    app: address
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dev-kube
+  name: address
+spec:
+  selector:
+    matchLabels:
+      app: address
+  replicas: ${POD}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: address
+    spec:
+      containers:
+        - name: address
+          image: address:${IMAGE_TAG}
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "600m"
